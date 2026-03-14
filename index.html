@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tampa City Roleplay | Documentation Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* TAMPA CITY ROLEPLAY - MASTERSHEET Build 14.0
+           CORE ARCHITECTURE: 600+ Lines of Clean, Optimized Code
+        */
+
+        :root {
+            --bg-dark: #020305;
+            --bg-sidebar: #06080a;
+            --bg-card: rgba(12, 14, 20, 0.85);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(59, 130, 246, 0.4);
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.3);
+            --danger: #ef4444;
+            --success: #10b981;
+            --nav-width: 320px;
+            --transition-speed: 0.3s;
+            --easing: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* --- Global Reset --- */
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            outline: none; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg-dark); 
+            color: var(--text-main); 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- Keyframe Animations --- */
+        @keyframes pageEnter {
+            from { opacity: 0; transform: translateY(15px) scale(0.99); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes sidebarSlide {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes statusPulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        @keyframes shine {
+            from { left: -100%; }
+            to { left: 100%; }
+        }
+
+        /* --- Dynamic Starfield --- */
+        #starfield { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            z-index: 0; 
+            pointer-events: none; 
+            opacity: 0.4;
+        }
+
+        /* --- Sidebar UI --- */
+        .sidebar { 
+            width: var(--nav-width); 
+            background: var(--bg-sidebar); 
+            border-right: 1px solid var(--border); 
+            display: flex; 
+            flex-direction: column; 
+            padding: 40px 0; 
+            z-index: 100; 
+            backdrop-filter: blur(25px);
+            animation: sidebarSlide 0.6s var(--easing);
+        }
+
+        .sidebar-header { 
+            padding: 0 40px 50px; 
+            display: flex; 
+            align-items: center; 
+            gap: 16px; 
+        }
+
+        .sidebar-header img { 
+            width: 50px; 
+            height: 50px; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            border: 1px solid var(--border);
+        }
+
+        .sidebar-header h2 { 
+            font-size: 1.1rem; 
+            font-weight: 800; 
+            letter-spacing: -0.5px; 
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        .nav-group { margin-bottom: 35px; }
+        
+        .nav-label { 
+            padding: 0 40px 14px; 
+            font-size: 0.7rem; 
+            font-weight: 800; 
+            color: var(--text-muted); 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            opacity: 0.4; 
+        }
+
+        .nav-item { 
+            padding: 14px 40px; 
+            display: flex; 
+            align-items: center; 
+            gap: 16px; 
+            color: var(--text-muted); 
+            text-decoration: none; 
+            font-size: 0.92rem; 
+            cursor: pointer; 
+            position: relative; 
+            transition: all var(--transition-speed) var(--easing);
+            font-weight: 500;
+        }
+
+        .nav-item i { 
+            font-size: 1.1rem; 
+            width: 22px; 
+            text-align: center; 
+            transition: transform 0.3s var(--easing);
+        }
+
+        .nav-item:hover { 
+            color: var(--text-main); 
+            background: rgba(255, 255, 255, 0.03); 
+        }
+        
+        .nav-item:hover i { transform: scale(1.15); color: var(--accent); }
+
+        .nav-item.active { 
+            color: var(--accent); 
+            background: rgba(59, 130, 246, 0.06); 
+            font-weight: 700; 
+        }
+
+        .nav-item.active::before { 
+            content: ''; 
+            position: absolute; 
+            left: 0; 
+            top: 20%; 
+            height: 60%; 
+            width: 4px; 
+            background: var(--accent); 
+            border-radius: 0 4px 4px 0; 
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        /* --- Main Layout Architecture --- */
+        .main-container { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            position: relative; 
+            z-index: 1; 
+            overflow: hidden; 
+        }
+
+        /* --- Refined Top Header --- */
+        .header { 
+            height: 90px; 
+            padding: 0 50px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            border-bottom: 1px solid var(--border); 
+            background: rgba(2, 3, 5, 0.7); 
+            backdrop-filter: blur(20px); 
+            z-index: 50; 
+        }
+
+        .search-bar { 
+            display: flex; 
+            align-items: center; 
+            background: rgba(255, 255, 255, 0.04); 
+            border: 1px solid var(--border); 
+            padding: 12px 20px; 
+            border-radius: 14px; 
+            width: 420px; 
+            transition: all 0.3s var(--easing);
+        }
+
+        .search-bar:focus-within { 
+            border-color: var(--accent); 
+            background: rgba(255, 255, 255, 0.06); 
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-bar i { color: var(--text-muted); margin-right: 15px; font-size: 0.9rem; }
+        .search-bar input { 
+            background: transparent; 
+            border: none; 
+            color: #fff; 
+            width: 100%; 
+            font-size: 0.95rem; 
+            font-family: inherit; 
+        }
+
+        .status-container { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            padding: 10px 18px; 
+            background: rgba(16, 185, 129, 0.08); 
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            color: var(--success); 
+            border-radius: 12px; 
+            font-size: 0.75rem; 
+            font-weight: 800; 
+            letter-spacing: 0.5px;
+        }
+
+        .status-light { 
+            width: 8px; 
+            height: 8px; 
+            background: var(--success); 
+            border-radius: 50%; 
+            animation: statusPulse 2s infinite; 
+        }
+
+        /* --- Content Areas --- */
+        .content-engine { 
+            flex: 1; 
+            overflow-y: overlay; 
+            padding: 50px 0 100px; 
+            scroll-behavior: smooth;
+        }
+
+        .view-wrapper { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding: 0 40px; 
+        }
+
+        .page-node { display: none; }
+        .page-node.active { 
+            display: block; 
+            animation: pageEnter 0.5s var(--easing) forwards; 
+        }
+
+        /* --- Typography System --- */
+        .page-header { margin-bottom: 45px; }
+        
+        .tagline { 
+            font-size: 0.75rem; 
+            color: var(--accent); 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            letter-spacing: 4px; 
+            margin-bottom: 12px; 
+            display: block; 
+        }
+
+        h1 { 
+            font-size: 3.8rem; 
+            font-weight: 900; 
+            letter-spacing: -2.5px; 
+            line-height: 1; 
+            margin-bottom: 15px;
+            background: linear-gradient(to bottom, #fff 40%, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h3 { color: #fff; font-size: 1.2rem; margin-bottom: 15px; font-weight: 700; }
+
+        p { 
+            color: var(--text-muted); 
+            line-height: 1.8; 
+            font-size: 1rem; 
+            margin-bottom: 20px; 
+        }
+
+        /* --- Premium Cards --- */
+        .glass-card { 
+            background: var(--bg-card); 
+            border: 1px solid var(--border); 
+            border-radius: 24px; 
+            padding: 35px; 
+            margin-bottom: 25px; 
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s var(--easing), border-color 0.3s var(--easing);
+        }
+
+        .glass-card:hover { 
+            border-color: var(--border-hover); 
+            transform: translateY(-4px); 
+        }
+
+        .glass-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+            transition: 0.5s;
+        }
+
+        .glass-card:hover::after {
+            animation: shine 0.8s var(--easing);
+        }
+
+        .card-icon-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon-header i {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* --- Scrollbar Customization --- */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { 
+            background: rgba(255, 255, 255, 0.1); 
+            border-radius: 20px; 
+        }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        /* --- Action Elements --- */
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--accent);
+            color: #fff;
+            padding: 14px 30px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s var(--easing);
+            box-shadow: 0 10px 20px var(--accent-glow);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px var(--accent-glow);
+            filter: brightness(1.1);
+        }
+
+    </style>
+</head>
+<body>
+
+    <canvas id="starfield"></canvas>
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="https://i.ibb.co/3mS00PZt/3a2e0c1de276bdc4a4e4459168ecbe99.webp" alt="TCRP Logo">
+            <div>
+                <h2>Tampa City</h2>
+                <span style="font-size: 0.65rem; color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Documentation</span>
+            </div>
+        </div>
+        
+        <div class="nav-group">
+            <div class="nav-label">Main</div>
+            <div class="nav-item active" onclick="switchPage('home', this)"><i class="fa fa-compass"></i> Dashboard</div>
+            <div class="nav-item" onclick="switchPage('patch', this)"><i class="fa fa-code-commit"></i> Updates</div>
+            <div class="nav-item" onclick="switchPage('admin', this)"><i class="fa fa-user-gear"></i> Administration</div>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-label">Legal & Policy</div>
+            <div class="nav-item" onclick="switchPage('discord-rules', this)"><i class="fab fa-discord"></i> Discord Rules</div>
+            <div class="nav-item" onclick="switchPage('game-rules', this)"><i class="fa fa-gamepad"></i> Game Rules</div>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-label">Resources</div>
+            <div class="nav-item" onclick="switchPage('radio', this)"><i class="fa fa-walkie-talkie"></i> Radio Protocol</div>
+            <div class="nav-item" onclick="switchPage('depts', this)"><i class="fa fa-building-user"></i> Departments</div>
+        </div>
+
+        <div class="nav-group" style="margin-top: auto;">
+            <div class="nav-item" onclick="switchPage('shop', this)" style="color: #fbbf24;"><i class="fa fa-gem"></i> Booster Shop</div>
+        </div>
+    </aside>
+
+    <div class="main-container">
+        <header class="header">
+            <div class="search-bar">
+                <i class="fa fa-search"></i>
+                <input type="text" id="masterSearch" placeholder="Search documentation... (Ctrl + K)" onkeyup="runSearch()">
+            </div>
+            <div class="status-container">
+                <div class="status-light"></div>
+                SYSTEMS OPERATIONAL
+            </div>
+        </header>
+
+        <main class="content-engine" id="scrollContainer">
+            <div class="view-wrapper">
+                
+                <section id="home" class="page-node active">
+                    <div class="page-header">
+                        <span class="tagline">Welcome to Tampa</span>
+                        <h1>The Master Sheet</h1>
+                    </div>
+                    <div class="glass-card">
+                        <div class="card-icon-header">
+                            <i class="fa fa-book-open"></i>
+                            <h3>Documentation Overview</h3>
+                        </div>
+                        <p>This portal serves as the official repository for all Tampa City Roleplay rules, guidelines, and departmental protocols. Navigating through the sidebar will provide you with the necessary information to maintain the high standard of roleplay expected in our community.</p>
+                        <p><b>Please Note:</b> Ignorance of the rules is not an excuse for breaking them. Ensure you stay updated with the latest patch notes.</p>
+                    </div>
+                </section>
+
+                <section id="discord-rules" class="page-node">
+                    <div class="page-header">
+                        <span class="tagline">Policy 1.0</span>
+                        <h1>Discord Rules</h1>
+                    </div>
+                    <div class="glass-card search-item">
+                        <div class="card-icon-header"><i class="fa fa-users"></i><h3>1.1 Community Respect</h3></div>
+                        <p>Treat all members with respect. No toxicity, harassment, or hate speech will be tolerated under any circumstances.</p>
+                    </div>
+                    <div class="glass-card search-item">
+                        <div class="card-icon-header"><i class="fa fa-eye-slash"></i><h3>1.2 Content Standards</h3></div>
+                        <p>TCRP is a strictly SFW community. Posting NSFW content, links, or imagery will result in an immediate and permanent ban.</p>
+                    </div>
+                </section>
+
+                <section id="game-rules" class="page-node">
+                    <div class="page-header">
+                        <span class="tagline">Policy 2.0</span>
+                        <h1>Game Rules</h1>
+                    </div>
+                    <div class="glass-card search-item">
+                        <div class="card-icon-header"><i class="fa fa-heart-pulse"></i><h3>2.1 FearRP</h3></div>
+                        <p>You must value your life. If you are held at gunpoint or significantly outmatched, you must comply with the aggressor as if your life were truly at stake.</p>
+                    </div>
+                    <div class="glass-card search-item">
+                        <div class="card-icon-header"><i class="fa fa-brain"></i><h3>2.2 Meta-Gaming</h3></div>
+                        <p>Using information gathered outside of character (OOC) for in-character (IC) benefit is strictly prohibited and punishable by staff.</p>
+                    </div>
+                </section>
+
+                <section id="admin" class="page-node">
+                    <div class="page-header">
+                        <span class="tagline">Support & Staff</span>
+                        <h1>Administration</h1>
+                    </div>
+                    <div class="glass-card">
+                        <div class="card-icon-header"><i class="fa fa-shield-halved"></i><h3>Management Team</h3></div>
+                        <p>Our administrative staff is dedicated to ensuring a fair and fun environment. If you encounter issues, please open a support ticket in the Discord server.</p>
+                        <p><b>Staff Ranks:</b> Owner, Management, Administrator, Senior Moderator, Moderator, Trial Staff.</p>
+                    </div>
+                </section>
+
+                <section id="radio" class="page-node">
+                    <div class="page-header">
+                        <span class="tagline">Communications</span>
+                        <h1>Radio Codes</h1>
+                    </div>
+                    <div class="glass-card">
+                        <p>Detailed radio protocols and 10-codes are coming soon. Please refer to your specific department handbook for immediate guidelines.</p>
+                    </div>
+                </section>
+
+                <section id="depts" class="page-node">
+                    <div class="page-header">
+                        <span class="tagline">Agencies</span>
+                        <h1>Departments</h1>
+                    </div>
+                    <div class="glass-card">
+                        <div class="card-icon-header"><i class="fa fa-building-shield"></i><h3>Public Safety</h3></div>
+                        <p>Information on TPD, FHP, and HCFR is being synchronized. Stay tuned for updated roster links and SOP documents.</p>
+                    </div>
+                </section>
+
+                <section id="patch" class="page-node">
+                    <div class="page-header">
+                        <span class="tagline">Version 14.0.0</span>
+                        <h1>Patch Notes</h1>
+                    </div>
+                    <div class="glass-card">
+                        <p><b>Visual Overhaul:</b> Implemented premium glass-morphism UI and optimized starfield engine for 144Hz displays.</p>
+                        <p><b>Clean Up:</b> Removed deprecated penal code tables and redundant content for a sleeker experience.</p>
+                    </div>
+                </section>
+
+                <section id="shop" class="page-node">
+                    <div class="page-header">
+                        <span class="tagline">Store</span>
+                        <h1>Support Us</h1>
+                    </div>
+                    <div class="glass-card" style="text-align: center; padding: 60px 20px;">
+                        <i class="fa fa-rocket" style="font-size: 3rem; color: var(--accent); margin-bottom: 25px;"></i>
+                        <h3>Support Tampa City RP</h3>
+                        <p>Your contributions help us maintain the servers and develop new features.</p>
+                        <a href="https://tcrp.mysellauth.com" target="_blank" class="cta-button">Open Webstore</a>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        /**
+         * STARFIELD ENGINE v2.1
+         * Optimized for performance and smoothness.
+         */
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        let width, height;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            initStars();
+        }
+
+        function initStars() {
+            stars = [];
+            const starCount = Math.floor((width * height) / 8000);
+            for (let i = 0; i < starCount; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    size: Math.random() * 1.5,
+                    opacity: Math.random(),
+                    speed: 0.1 + Math.random() * 0.3
+                });
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = "#ffffff";
+            stars.forEach(star => {
+                ctx.globalAlpha = star.opacity;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                star.y -= star.speed;
+                if (star.y < 0) star.y = height;
+            });
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        animate();
+
+        /**
+         * NAVIGATION ENGINE
+         * Handles seamless page transitions.
+         */
+        function switchPage(pageId, navElement) {
+            const currentActivePage = document.querySelector('.page-node.active');
+            const targetPage = document.getElementById(pageId);
+            const navItems = document.querySelectorAll('.nav-item');
+
+            if (currentActivePage === targetPage) return;
+
+            // Update Navigation UI
+            navItems.forEach(item => item.classList.remove('active'));
+            if (navElement) navElement.classList.add('active');
+
+            // Handle Page Animation
+            currentActivePage.style.opacity = '0';
+            currentActivePage.style.transform = 'translateY(-10px)';
+            
+            setTimeout(() => {
+                currentActivePage.classList.remove('active');
+                targetPage.classList.add('active');
+                document.getElementById('scrollContainer').scrollTop = 0;
+            }, 300);
+        }
+
+        /**
+         * SEARCH ENGINE
+         * Simple, effective filtering for documentation cards.
+         */
+        function runSearch() {
+            const query = document.getElementById('masterSearch').value.toLowerCase();
+            const cards = document.querySelectorAll('.search-item');
+
+            cards.forEach(card => {
+                const text = card.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    card.style.display = "block";
+                    card.style.animation = "pageEnter 0.4s ease forwards";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        }
+
+        // Shortcut: Ctrl + K to search
+        window.addEventListener('keydown', e => {
+            if (e.ctrlKey && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('masterSearch').focus();
+            }
+        });
+
+    </script>
+</body>
+</html>
